@@ -30,10 +30,10 @@ Este projeto modela o banco de dados relacional de uma oficina mecânica, aborda
 - `pagamentos`  
 
 **Principais Relacionamentos:**  
-- Um cliente pode ter vários veículos.  
-- Uma ordem de serviço envolve um cliente, um veículo e um mecânico.  
-- Uma ordem pode conter vários serviços.  
-- Uma ordem pode ter um ou nenhum pagamento.  
+- `Um cliente pode ter vários veículos` 
+- `Uma ordem de serviço envolve um cliente, um veículo e um mecânico`  
+- `Uma ordem pode conter vários serviços`  
+- `Uma ordem pode ter um ou nenhum pagamento`  
 
 ---
 
@@ -109,61 +109,76 @@ CREATE TABLE pagamentos (
 
 ## 📥 Inserção de Dados (DML)
 
+
+# Clientes
 ```sql
--- Clientes
 INSERT INTO clientes (nome, telefone, email, endereco) VALUES
 ('Carlos Souza', '11999999999', 'carlos@email.com', 'Rua A, 123'),
 ('Maria Oliveira', '11988888888', 'maria@email.com', 'Av. B, 456');
+```
 
--- Veículos
+# Veículos
+```sql
 INSERT INTO veiculos (id_cliente, marca, modelo, ano, placa) VALUES
 (1, 'Toyota', 'Corolla', 2018, 'ABC1D23'),
 (2, 'Honda', 'Civic', 2020, 'XYZ9Z88');
+```
 
--- Mecânicos
+# Mecânicos
+```sql
 INSERT INTO mecanicos (nome, especialidade, telefone) VALUES
 ('João Mecânico', 'Motor', '11977777777'),
 ('Ana Mecânica', 'Suspensão', '11966666666');
+```
 
--- Serviços
+# Serviços
+```sql
 INSERT INTO servicos (descricao, preco_padrao) VALUES
 ('Troca de óleo', 150.00),
 ('Alinhamento e balanceamento', 120.00),
 ('Revisão de freios', 200.00);
+```
 
--- Ordens de Serviço
+# Ordens de Serviço
+```sql
 INSERT INTO ordens_servico (id_cliente, id_veiculo, id_mecanico, data_emissao, status, valor_total) VALUES
 (1, 1, 1, '2024-04-01', 'Concluída', 270.00),
 (2, 2, 2, '2024-04-03', 'Em andamento', 200.00);
+```
 
--- Itens da Ordem
+# Itens da Ordem
+```sql
 INSERT INTO itens_ordem_servico (id_ordem, id_servico, quantidade, preco_unitario, subtotal) VALUES
 (1, 1, 1, 150.00, 150.00),
 (1, 2, 1, 120.00, 120.00),
 (2, 3, 1, 200.00, 200.00);
+```
 
--- Pagamentos
+# Pagamentos
+```sql
 INSERT INTO pagamentos (id_ordem, data_pagamento, valor_pago, forma_pagamento, status_pagamento) VALUES
 (1, '2025-04-01', 150.00, 'Cartão de Crédito', 'Aprovado'),
 (2, NULL, 0.00, 'PIX', 'Pendente'),
 (1, '2025-04-03', 0.00, 'Boleto', 'Cancelado');
-
 ```
+
+
+---
 
 ## 📊 Consultas SQL Avançadas
 
-🔹 1. Faturamento Mensal
+🔹  1. Faturamento Mensal
 ```sql 
 SELECT TO_CHAR(data_emissao, 'YYYY-MM') AS mes, SUM(valor_total) AS faturamento
 FROM ordens_servico
 GROUP BY TO_CHAR(data_emissao, 'YYYY-MM')
 ORDER BY mes;
-
-#Resultado esperado:
+```
+🔹 🔹  Resultado esperado:
 
 mes	faturamento
 2024-04	470.00
-```
+
 
 🔹 2. Clientes que mais gastaram
 ```sql
@@ -172,13 +187,13 @@ FROM clientes c
 JOIN ordens_servico os ON c.id_cliente = os.id_cliente
 GROUP BY c.nome
 ORDER BY total_gasto DESC;
-
-#Resultado esperado:
+```
+🔹 🔹  Resultado esperado:
 
 nome	total_gasto
 Carlos Souza	270.00
 Maria Oliveira	200.00
-```
+ 
 
 🔹 3. Serviços mais realizados
 ```sql
@@ -187,14 +202,14 @@ FROM itens_ordem_servico ios
 JOIN servicos s ON ios.id_servico = s.id_servico
 GROUP BY s.descricao
 ORDER BY total_servicos DESC;
-
-#Resultado esperado:
+```
+# Resultado esperado:
 
 descricao	total_servicos
 Troca de óleo	1
 Alinhamento e balanceamento	1
 Revisão de freios	1
-```
+
 
 🔹 4. Ordens com seus serviços
 ```sql
@@ -203,14 +218,14 @@ FROM ordens_servico os
 JOIN clientes c ON os.id_cliente = c.id_cliente
 JOIN itens_ordem_servico ios ON os.id_ordem = ios.id_ordem
 JOIN servicos s ON ios.id_servico = s.id_servico;
-
-#Resultado esperado:
+```
+# Resultado esperado:
 
 id_ordem	cliente	servico	quantidade	subtotal
 1	Carlos Souza	Troca de óleo	1	150.00
 1	Carlos Souza	Alinhamento e balanceamento	1	120.00
 2	Maria Oliveira	Revisão de freios	1	200.00
-```
+
 
 🔹 5. Pagamentos pendentes
 ```sql
@@ -219,32 +234,36 @@ FROM ordens_servico os
 JOIN clientes c ON os.id_cliente = c.id_cliente
 LEFT JOIN pagamentos p ON os.id_ordem = p.id_ordem
 WHERE p.status_pagamento IS NULL OR p.status_pagamento <> 'Aprovado';
-
-#Resultado esperado:
+```
+# Resultado esperado:
 
 id_ordem	nome	valor_total	status_pagamento
 2	Maria Oliveira	200.00	Pendente
 1	Carlos Souza	270.00	Cancelado
-```
+
 
 ---
 
-📌 Créditos
-Criado por SILVIA GUIMARÃES como parte do portfólio SQL e modelagem relacional.
+## 📌 Créditos e Contato
+
+> Criado por **SILVIA GUIMARÃES** como parte de portfólio de projetos SQL e modelagem relacional.
+
+Para dúvidas ou sugestões, entre em contato comigo:
+- **E-mail:** (sguimaraes1004@gmail.com)
+- **Redes Sociais: [LinkedIn](https://www.linkedin.com/in/silvia-maria-guimar%C3%A3es-costa-3a01b423b)**
+  
+---
+
+## **Agradecimentos**
+
+Agradeço à equipe da **DIO** e **HEINEKEN** pela oportunidade de participar deste desafio e ampliar minhas habilidades em modelagem de banco de dados e organização estrutural de informações.  
+Este projeto reflete o aprendizado prático e meu compromisso com boas práticas na área de tecnologia.
 
 ---
 
-🙏 Agradecimentos
-Agradeço à equipe da DIO e HEINEKEN pela oportunidade de participar deste desafio e ampliar minhas habilidades em banco de dados e organização estrutural de informações.
+🍺 _A parceria com a Heineken reforça o compromisso de promover a inovação e o aprendizado na área de tecnologia._
 
 ---
 
-📬 Contato
 
-E-mail: sguimaraes1004@gmail.com
-
-LinkedIn: Silvia Maria Guimarães Costa
-
----
-
-📌 A parceria com a Heineken reforça o compromisso de promover inovação e aprendizado em tecnologia.
+# ![DIO Logo](https://hermes.digitalinnovation.one/assets/diome/logo.png)
