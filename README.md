@@ -37,9 +37,10 @@ Este projeto modela o banco de dados relacional de uma oficina mecânica, aborda
 
 ---
 
-## 🖼️ Diagrama ER  
+### 🔗 Diagrama do Banco de Dados
 
-> 🔗 **[Clique aqui para visualizar o Diagrama do Banco de Dados](https://dbdiagram.io/)**  
+
+> 👉 **[Clique aqui para visualizar o Diagrama do Banco de Dados](https://github.com/SMGC-GIT/Projeto_Oficina/blob/main/diagrama.png)**
 
 ---
 
