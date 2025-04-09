@@ -48,7 +48,7 @@ Este projeto modela o banco de dados relacional de uma oficina mecânica, aborda
 
 ```sql
 CREATE TABLE clientes (
-    id_cliente SERIAL PRIMARY KEY,
+    id_cliente INTEGER PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(100),
     telefone VARCHAR(20),
     email VARCHAR(100),
@@ -56,53 +56,60 @@ CREATE TABLE clientes (
 );
 
 CREATE TABLE veiculos (
-    id_veiculo SERIAL PRIMARY KEY,
-    id_cliente INT REFERENCES clientes(id_cliente),
+    id_veiculo INTEGER PRIMARY KEY AUTO_INCREMENT,
+    id_cliente INTEGER,
     marca VARCHAR(50),
     modelo VARCHAR(50),
-    ano INT,
-    placa VARCHAR(10)
+    ano INTEGER,
+    placa VARCHAR(10),
+    FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente)
 );
 
 CREATE TABLE mecanicos (
-    id_mecanico SERIAL PRIMARY KEY,
+    id_mecanico INTEGER PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(100),
     especialidade VARCHAR(100),
     telefone VARCHAR(20)
 );
 
 CREATE TABLE servicos (
-    id_servico SERIAL PRIMARY KEY,
+    id_servico INTEGER PRIMARY KEY AUTO_INCREMENT,
     descricao VARCHAR(200),
-    preco_padrao NUMERIC(10,2)
+    preco_padrao DECIMAL(10,2)
 );
 
 CREATE TABLE ordens_servico (
-    id_ordem SERIAL PRIMARY KEY,
-    id_cliente INT REFERENCES clientes(id_cliente),
-    id_veiculo INT REFERENCES veiculos(id_veiculo),
-    id_mecanico INT REFERENCES mecanicos(id_mecanico),
+    id_ordem INTEGER PRIMARY KEY AUTO_INCREMENT,
+    id_cliente INTEGER,
+    id_veiculo INTEGER,
+    id_mecanico INTEGER,
     data_emissao DATE,
     status VARCHAR(30),
-    valor_total NUMERIC(10,2)
+    valor_total DECIMAL(10,2),
+    FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente),
+    FOREIGN KEY (id_veiculo) REFERENCES veiculos(id_veiculo),
+    FOREIGN KEY (id_mecanico) REFERENCES mecanicos(id_mecanico)
 );
 
 CREATE TABLE itens_ordem_servico (
-    id_item SERIAL PRIMARY KEY,
-    id_ordem INT REFERENCES ordens_servico(id_ordem),
-    id_servico INT REFERENCES servicos(id_servico),
-    quantidade INT,
-    preco_unitario NUMERIC(10,2),
-    subtotal NUMERIC(10,2)
+    id_item INTEGER PRIMARY KEY AUTO_INCREMENT,
+    id_ordem INTEGER,
+    id_servico INTEGER,
+    quantidade INTEGER,
+    preco_unitario DECIMAL(10,2),
+    subtotal DECIMAL(10,2),
+    FOREIGN KEY (id_ordem) REFERENCES ordens_servico(id_ordem),
+    FOREIGN KEY (id_servico) REFERENCES servicos(id_servico)
 );
 
 CREATE TABLE pagamentos (
-    id_pagamento SERIAL PRIMARY KEY,
-    id_ordem INT REFERENCES ordens_servico(id_ordem),
+    id_pagamento INTEGER PRIMARY KEY AUTO_INCREMENT,
+    id_ordem INTEGER,
     data_pagamento DATE,
     forma_pagamento VARCHAR(50),
-    valor_pago NUMERIC(10,2),
-    status_pagamento VARCHAR(30)
+    valor_pago DECIMAL(10,2),
+    status_pagamento VARCHAR(30),
+    FOREIGN KEY (id_ordem) REFERENCES ordens_servico(id_ordem)
 );
 ```
 
@@ -166,7 +173,7 @@ INSERT INTO pagamentos (id_ordem, data_pagamento, valor_pago, forma_pagamento, s
 
 ---
 
-## 📊 Consultas SQL Avançadas
+## 📊 Consultas SQL 
 
 ### 1. Faturamento Mensal
 
@@ -252,6 +259,82 @@ Resultado esperado:
 |----------|----------------|-------------|------------------|
 | 1        | Carlos Souza   | 270.00      | Cancelado        |
 | 2        | Maria Oliveira | 200.00      | Pendente         |
+```
+
+ 
+### 6. Clientes com maior valor gasto em ordens de serviço
+
+```sql
+SELECT 
+    c.nome AS cliente,
+    SUM(o.valor_total) AS total_gasto
+FROM 
+    clientes c
+JOIN 
+    ordens_servico o ON c.id_cliente = o.id_cliente
+GROUP BY 
+    c.nome
+ORDER BY 
+    total_gasto DESC
+LIMIT 5;
+```
+
+```text
+| cliente        | total_gasto |
+|----------------|-------------|
+| Carlos Souza   | 270.00      |
+| Maria Oliveira | 200.00      |
+```
+
+---
+
+### 7. Mecânicos com maior número de serviços executados
+
+```sql
+SELECT 
+    m.nome AS mecanico,
+    COUNT(o.id_ordem) AS total_ordens
+FROM 
+    mecanicos m
+JOIN 
+    ordens_servico o ON m.id_mecanico = o.id_mecanico
+GROUP BY 
+    m.nome
+ORDER BY 
+    total_ordens DESC;
+```
+
+```text
+| mecanico      | total_ordens |
+|---------------|--------------|
+| João Mecânico | 1            |
+| Ana Mecânica  | 1            |
+```
+
+---
+
+### 8. Receita total por tipo de serviço
+
+```sql
+SELECT 
+    s.descricao AS servico,
+    SUM(ios.subtotal) AS receita_total
+FROM 
+    servicos s
+JOIN 
+    itens_ordem_servico ios ON s.id_servico = ios.id_servico
+GROUP BY 
+    s.descricao
+ORDER BY 
+    receita_total DESC;
+```
+
+```text
+| servico                    | receita_total  |
+|----------------------------|----------------|
+| Revisão de freios          | 200.00         |
+| Troca de óleo              | 150.00         |
+| Alinhamento e balanceamento| 120.00         |
 ```
 
 ---
