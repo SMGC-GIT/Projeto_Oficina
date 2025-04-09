@@ -265,7 +265,7 @@ Para dúvidas ou sugestões, entre em contato comigo:
   
 ---
 
-## **Agradecimentos**
+## 🙏 Agradecimentos
 
 Agradeço à equipe da **DIO** e **HEINEKEN** pela oportunidade de participar deste desafio e ampliar minhas habilidades em modelagem de banco de dados e organização estrutural de informações.  
 Este projeto reflete o aprendizado prático e meu compromisso com boas práticas na área de tecnologia.
